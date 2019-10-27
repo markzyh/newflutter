@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MaterialApp(
-      title: 'demo',
-      home: Counter(),
-    ));
+void main() {
+  runApp(MaterialApp(
+    title: 'Shopping App',
+    home: Scaffold(
+      appBar: AppBar(
+        title: Text('flutter layout demo'),
+      ),
+      body: Counter(),
+    ),
+  ));
+}
 
 class CounterDisplay extends StatelessWidget {
-  CounterDisplay({this.count});
   final int count;
-
+  CounterDisplay({this.count});
   @override
   Widget build(BuildContext context) {
-    return Text('Count:$count');
+    return Text('Counter:$count');
   }
 }
 
 class CounterIncrementor extends StatelessWidget {
   CounterIncrementor({this.onPressed});
   final VoidCallback onPressed;
-
   @override
   Widget build(BuildContext context) {
     return RaisedButton(
       onPressed: onPressed,
-      child: Text('Increment'),
+      child: Text('increment'),
     );
   }
 }
@@ -35,9 +40,10 @@ class Counter extends StatefulWidget {
 
 class _CounterState extends State<Counter> {
   int _counter = 0;
+
   void _increment() {
     setState(() {
-      ++_counter;
+      _counter++;
     });
   }
 
@@ -48,7 +54,9 @@ class _CounterState extends State<Counter> {
         CounterIncrementor(
           onPressed: _increment,
         ),
-        CounterDisplay(count: _counter)
+        CounterDisplay(
+          count: _counter,
+        ),
       ],
     );
   }

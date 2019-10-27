@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(TabBarDemo());
+  runApp(MaterialApp(
+    title: 'Shopping App',
+    home: Scaffold(
+      appBar: AppBar(
+        title: Text('flutter layout demo'),
+      ),
+      body: TabBarDemo(),
+    ),
+  ));
 }
 
 class TabBarDemo extends StatefulWidget {
+  const TabBarDemo() : super();
+
   @override
   _TabBarDemo createState() => _TabBarDemo();
 }
@@ -23,39 +33,35 @@ class _TabBarDemo extends State<TabBarDemo>
 
   @override
   void dispose() {
-    super.dispose();
     _scrollViewController.dispose();
     _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'TabBar Demo',
-      home: Scaffold(
+    return SizedBox(
+      height: 500,
+      child: Scaffold(
         appBar: AppBar(
-          title: Text('TabBar Demo'),
-        ),
-        body: TabBarView(
-          controller: _tabController,
-          children: <Widget>[
-            Text('PageView111'),
-            Text('PageView222'),
-            Text('PageView333'),
-          ],
-        ),
-        bottomNavigationBar: Material(
-          color: Colors.grey,
-          child: TabBar(
+          title: Text('TabBar'),
+          leading: Icon(Icons.home),
+          backgroundColor: Colors.amber[1000],
+          bottom: TabBar(
+            isScrollable: true,
             controller: _tabController,
             tabs: <Widget>[
-              FlatButton(child: Text('button1')),
-              FlatButton(child: Text('button2')),
-              FlatButton(child: Text('button3')),
+              Tab(text: 'tabs 1'),
+              Tab(text: 'tabs 2'),
+              Tab(text: 'tabs 3'),
             ],
-            indicatorColor: Colors.white,
           ),
         ),
+        body: TabBarView(controller: _tabController, children: <Widget>[
+          Text('TabsView1'),
+          Text('TabsView2'),
+          Text('TabsView3'),
+        ]),
       ),
     );
   }

@@ -37,55 +37,63 @@ class _PullLoadWidget extends State<PullLoadWidget> {
       //判断是否滑动到底部，触发加载更多回调
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
+        setState(() {
+          _isLoadingMore = true;
+        });
+        _loadingMore();
         //加载更多
         print('加载更多');
-        Future.delayed(const Duration(seconds: 3), () {
+        Future.delayed(const Duration(seconds: 1), () {
           setState(() {
             _itemCount += 10;
+            _isLoadingMore = false;
           });
         });
       }
     });
   }
 
+  _loadingMore() {
+    return Padding(
+      child: Text(
+        '正在加载更多。。。',
+      ),
+      padding: EdgeInsets.all(15),
+    );
+  }
+
+  // Widget _listViewChild() {
+  //   return Expanded(
+  //     child: ListView.builder(
+  //       physics: BouncingScrollPhysics(),
+  //       itemBuilder: (context, index) {
+  //         return DemoItem('$index');
+  //       },
+  //       itemCount: _itemCount,
+  //       controller: _scrollController,
+  //     ),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
+    var itemCount = _isLoadingMore ? _itemCount + 1 : _itemCount;
     return RefreshIndicator(
       key: refreshKey,
       onRefresh: onRefresh,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              ListView.builder(
-                physics: BouncingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return DemoItem('$index');
-                },
-                itemCount: _itemCount,
-                controller: _scrollController,
-              ),
-            ],
-          ),
-          Text('加载更多')
-        ],
+      child: ListView.builder(
+        physics: BouncingScrollPhysics(),
+        itemBuilder: (context, index) {
+          if (index == _itemCount) {
+            print('99999999999');
+            return _loadingMore();
+          }
+          return DemoItem('$index');
+        },
+        itemCount: itemCount,
+        controller: _scrollController,
       ),
     );
-    // return MaterialApp(
-    //   title: 'Shopping App',
-    //   home: Scaffold(
-    //     appBar: AppBar(
-    //       title: Text('flutter layout demo'),
-    //     ),
-    //     body: ListView.builder(
-    //       itemBuilder: (context, index) {
-    //         return DemoItem();
-    //       },
-    //       itemCount: 50,
-    //     ),
-    //   ),
-    // );
   }
 }
 

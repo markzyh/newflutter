@@ -1,62 +1,103 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(TabBarDemo());
+  runApp(MaterialApp(
+    title: 'Shopping App',
+    home: Scaffold(
+      appBar: AppBar(
+        title: Text('flutter layout demo'),
+      ),
+      body: PullLoadWidget(),
+    ),
+  ));
 }
 
-class TabBarDemo extends StatefulWidget {
+class PullLoadWidget extends StatefulWidget {
   @override
-  _TabBarDemo createState() => _TabBarDemo();
+  _PullLoadWidget createState() => _PullLoadWidget();
 }
 
-class _TabBarDemo extends State<TabBarDemo>
-    with SingleTickerProviderStateMixin {
-  ScrollController _scrollViewController;
-  TabController _tabController;
+class _PullLoadWidget extends State<PullLoadWidget> {
+  final ScrollController _scrollController = ScrollController();
+  final refreshKey = GlobalKey<RefreshIndicatorState>();
+  int _itemCount = 50;
+  bool _isLoadingMore = false;
+
+  //上拉刷新
+  @protected
+  Future<Null> onRefresh() async {
+    print('刷新了刷新了111');
+  }
 
   @override
   void initState() {
     super.initState();
-    _scrollViewController = ScrollController();
-    _tabController = TabController(vsync: this, length: 3);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _scrollViewController.dispose();
-    _tabController.dispose();
+    //增加滑动监听
+    _scrollController.addListener(() {
+      //判断是否滑动到底部，触发加载更多回调
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        //加载更多
+        print('加载更多');
+        Future.delayed(const Duration(seconds: 3), () {
+          setState(() {
+            _itemCount += 10;
+          });
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'TabBar Demo',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('TabBar Demo'),
-        ),
-        body: TabBarView(
-          controller: _tabController,
-          children: <Widget>[
-            Text('PageView111'),
-            Text('PageView222'),
-            Text('PageView333'),
-          ],
-        ),
-        bottomNavigationBar: Material(
-          color: Colors.grey,
-          child: TabBar(
-            controller: _tabController,
-            tabs: <Widget>[
-              FlatButton(child: Text('button1')),
-              FlatButton(child: Text('button2')),
-              FlatButton(child: Text('button3')),
+    return RefreshIndicator(
+      key: refreshKey,
+      onRefresh: onRefresh,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Stack(
+            children: <Widget>[
+              ListView.builder(
+                physics: BouncingScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return DemoItem('$index');
+                },
+                itemCount: _itemCount,
+                controller: _scrollController,
+              ),
             ],
-            indicatorColor: Colors.white,
           ),
-        ),
+          Text('加载更多')
+        ],
       ),
+    );
+    // return MaterialApp(
+    //   title: 'Shopping App',
+    //   home: Scaffold(
+    //     appBar: AppBar(
+    //       title: Text('flutter layout demo'),
+    //     ),
+    //     body: ListView.builder(
+    //       itemBuilder: (context, index) {
+    //         return DemoItem();
+    //       },
+    //       itemCount: 50,
+    //     ),
+    //   ),
+    // );
+  }
+}
+
+class DemoItem extends StatelessWidget {
+  final String text;
+
+  const DemoItem(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Text('$text'),
     );
   }
 }

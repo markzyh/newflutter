@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:newflutter/navigator/NewPage.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -64,6 +63,19 @@ class _PullLoadWidget extends State<PullLoadWidget> {
     ]);
   }
 
+  // Widget _listViewChild() {
+  //   return Expanded(
+  //     child: ListView.builder(
+  //       physics: BouncingScrollPhysics(),
+  //       itemBuilder: (context, index) {
+  //         return DemoItem('$index');
+  //       },
+  //       itemCount: _itemCount,
+  //       controller: _scrollController,
+  //     ),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     var itemCount = _isLoadingMore ? _itemCount + 1 : _itemCount;
@@ -99,14 +111,7 @@ class DemoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: FlatButton(
-        child: Text('$text'),
-        onPressed: () {
-          // Navigator.pushNamed(context, NewPage);
-          Navigator.push(context,
-              new MaterialPageRoute(builder: (context) => new NewPage()));
-        },
-      ),
+      child: Text('$text'),
     );
   }
 }

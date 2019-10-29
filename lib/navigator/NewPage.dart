@@ -1,29 +1,54 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-class NewPage extends StatelessWidget {
+part 'NewPage.g.dart';
+
+@JsonSerializable()
+class User {
+  User(this.name, this.email);
+
+  String name;
+  String email;
+  //不同的类使用不同的mixin即可
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  Map<String, dynamic> toJson() => _$UserToJson(this);
+}
+
+class NewPage extends StatefulWidget {
+  @override
+  _NewPageState createState() => _NewPageState();
+}
+
+class _NewPageState extends State<NewPage> {
+  var resData;
   // onPressed() {
   //   // Navigator.pushNamed(context, NewPage);
   //   Navigator.push(
   //       context, new MaterialPageRoute(builder: (context) => new NewPage()));
   // }
-  FormData formData = FormData.fromMap({
-    "page": 1,
-    "size": 5,
-  });
+  @override
+  void initState() {
+    super.initState();
+    _getHttp();
+  }
+
   void _getHttp() async {
     Response response;
     String url = 'http://fundapi.jixhui.com/article/list';
-    // String url = 'http://fundapi.jixhui.com/banner/list';
-    Map params = {'page': 1, 'size': 5};
+    var params = {'page': 1, 'size': 5};
     Dio dio = new Dio();
-    dio.interceptors.add(LogInterceptor(responseBody: true));
+    // dio.interceptors.add(LogInterceptor(responseBody: true));
     try {
-      response = await dio.post(url, data: formData);
-      print(params);
-      print(response);
+      response = await dio.post(url, data: FormData.fromMap(params));
+      setState(() {
+        resData = json.encode(response);
+      });
+      print(resData);
     } catch (e) {
-      print(e);
+      // print(e);
     }
   }
 
@@ -36,10 +61,10 @@ class NewPage extends StatelessWidget {
           title: Text('flutter layout demo'),
         ),
         body: Container(
-          child: FlatButton(
-            onPressed: _getHttp,
-            child: Text('data00'),
-          ),
+          // child: FlatButton(
+          //   onPressed: _getHttp,
+          child: Text('data00'),
+          // ),
         ),
       ),
     );

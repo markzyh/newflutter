@@ -6,14 +6,15 @@ part of 'NewPage.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-User _$UserFromJson(Map<String, dynamic> json) {
-  return User(
-    json['name'] as String,
-    json['email'] as String,
+ActicleLIstData _$ActicleLIstDataFromJson(Map<String, dynamic> json) {
+  return ActicleLIstData(
+    json['title'] as String,
+    json['author'] as String,
   );
 }
 
-Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
-      'name': instance.name,
-      'email': instance.email,
+Map<String, dynamic> _$ActicleLIstDataToJson(ActicleLIstData instance) =>
+    <String, dynamic>{
+      'title': instance.title,
+      'author': instance.author,
     };

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -7,14 +6,17 @@ import 'package:json_annotation/json_annotation.dart';
 part 'NewPage.g.dart';
 
 @JsonSerializable()
-class User {
-  User(this.name, this.email);
+class ActicleLIstData {
+  String title, author;
 
-  String name;
-  String email;
+  ActicleLIstData(
+    this.title,
+    this.author,
+  );
   //不同的类使用不同的mixin即可
-  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
-  Map<String, dynamic> toJson() => _$UserToJson(this);
+  factory ActicleLIstData.fromJson(Map<String, dynamic> json) =>
+      _$ActicleLIstDataFromJson(json);
+  Map<String, dynamic> toJson() => _$ActicleLIstDataToJson(this);
 }
 
 class NewPage extends StatefulWidget {
@@ -23,32 +25,40 @@ class NewPage extends StatefulWidget {
 }
 
 class _NewPageState extends State<NewPage> {
+  List dataList = [];
+  final ScrollController _scrollController = ScrollController();
+  final refreshKey = GlobalKey<RefreshIndicatorState>();
   var resData;
-  // onPressed() {
-  //   // Navigator.pushNamed(context, NewPage);
-  //   Navigator.push(
-  //       context, new MaterialPageRoute(builder: (context) => new NewPage()));
-  // }
   @override
   void initState() {
     super.initState();
+    print('开始了开始了开始了开始了');
     _getHttp();
   }
 
   void _getHttp() async {
     Response response;
+    var res;
     String url = 'http://fundapi.jixhui.com/article/list';
     var params = {'page': 1, 'size': 5};
     Dio dio = new Dio();
-    // dio.interceptors.add(LogInterceptor(responseBody: true));
     try {
       response = await dio.post(url, data: FormData.fromMap(params));
-      setState(() {
-        resData = json.encode(response);
+      res = json.decode(response.toString());
+      resData = res['data'];
+      List items = [];
+      resData.forEach((item) {
+        items.add(ActicleLIstData(
+          item['title'],
+          item['author'],
+        ));
       });
-      print(resData);
+      setState(() {
+        dataList = items;
+      });
     } catch (e) {
-      // print(e);
+      print(e);
+      print('错误出现异常');
     }
   }
 
@@ -61,10 +71,19 @@ class _NewPageState extends State<NewPage> {
           title: Text('flutter layout demo'),
         ),
         body: Container(
-          // child: FlatButton(
-          //   onPressed: _getHttp,
-          child: Text('data00'),
-          // ),
+          child: ListView.separated(
+            physics: AlwaysScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              ActicleLIstData getData = dataList[index];
+              return Text('${getData.title}');
+            },
+            itemCount: dataList.length,
+            controller: _scrollController,
+            separatorBuilder: (BuildContext context, int index) => Divider(
+              height: 1,
+              color: Colors.blue,
+            ),
+          ),
         ),
       ),
     );

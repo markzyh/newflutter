@@ -2,36 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
-//登陆信息类型
-class AuthState {
-  bool isLogin;
-  UserInfo userInfo;
-  AuthState(this.isLogin, this.userInfo);
-}
+enum Actions { Increment }
 
-class UserInfo {
-  String userName;
-  String userId;
-  UserInfo(this.userName, this.userId);
-}
-
-enum Actions { Login, Logout }
-
-AuthState authReducer(AuthState state, dynamic action) {
-  if (action == Actions.Login) {
-    state.isLogin = true;
-    state.userInfo.userName = 'markzyh';
-    return state;
-  } else if (action == Actions.Logout) {
-    state.isLogin = false;
-    state.userInfo.userName = '';
-  }
+int counterReducer(int state, dynamic action) {
+  if (action == Actions.Increment) return state + 1;
   return state;
 }
 
 void main() {
-  final store = Store<AuthState>(authReducer,
-      initialState: AuthState(false, UserInfo('userName', 'id:0')));
+  final store = Store<int>(counterReducer, initialState: 0);
   runApp(ReduxDemo(
     title: 'redux-demo',
     store: store,
@@ -45,7 +24,7 @@ class ReduxDemo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreProvider<AuthState>(
+    return StoreProvider<int>(
       store: store,
       child: MaterialApp(
         theme: new ThemeData.dark(),
@@ -55,21 +34,20 @@ class ReduxDemo extends StatelessWidget {
             title: Text(title),
           ),
           body: Center(
-            child: StoreConnector<AuthState, String>(
-              //converter转换器
-              converter: (store) => store.state.userInfo.userName.toString(),
-              builder: (context, userName) {
+            child: StoreConnector<int, String>(
+              converter: (store) => store.state.toString(),
+              builder: (context, count) {
                 return Text(
-                  userName,
+                  count,
                   style: Theme.of(context).textTheme.display1,
                 );
               },
             ),
           ),
           //泛型，store的类型，converter的返回值的类型
-          floatingActionButton: StoreConnector<AuthState, VoidCallback>(
+          floatingActionButton: StoreConnector<int, VoidCallback>(
             converter: (store) {
-              return () => store.dispatch(Actions.Login);
+              return () => store.dispatch(Actions.Increment);
             },
             builder: (context, callback) {
               return FloatingActionButton(
